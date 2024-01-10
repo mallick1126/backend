@@ -1,1 +1,1 @@
-export const  DB_NAME = 'snapstream'
+export const DB_NAME = "snapstream";
