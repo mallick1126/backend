@@ -1,0 +1,16 @@
+{
+  "name": "professional-grade-backend",
+  "version": "1.0.0",
+  "description": "professional grade backend for a youtube like platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "javascript",
+    "nodejs",
+    "mern"
+  ],
+  "author": "Rahul Mallick",
+  "license": "ISC"
+}
