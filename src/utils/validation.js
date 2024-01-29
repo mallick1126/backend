@@ -11,6 +11,7 @@ async function isUsernameTaken(username) {
     const existingUser = await User.findOne({ email });
     return existingUser !== null;
   }
+  
 export { isEmailRegistered, isUsernameTaken };
 
 
