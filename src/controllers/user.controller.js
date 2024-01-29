@@ -44,7 +44,7 @@ const userRegister = asyncHandler(async (req, res) => {
 
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
-  const newUser = User.create({
+  const newUser = await User.create({
     username: username.toLowerCase(),
     email,
     fullname,
@@ -53,15 +53,15 @@ const userRegister = asyncHandler(async (req, res) => {
     coverImage: coverImage?.url || "",
   });
 
-  console.log(createdUser);
   //finding the user with the provided id and selecting the items that we don't want.
   const createdUser = await User.findOne(newUser._id).select(
     "-password -refreshToken"
   );
- 
-  if (!createdUser)
-    throw new ApiError(500, `Something went wrong while registering the user`);
 
+  console.log(createdUser);
+  if (!createdUser) {
+    throw new ApiError(500, `Something went wrong while registering the user`);
+  }
   return res
     .status(201)
     .json(new ApiResponse(200, createdUser, `User registered successfully!`));
