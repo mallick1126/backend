@@ -212,7 +212,13 @@ const updateUserInformation = asyncHandler(async (req, res) => {
 
 const updateUserAvatar = asyncHandler(async (req, res) => {
   const avatarlocalPath = req.file?.path;
+  if (!avatarlocalPath) {
+    throw new ApiError(400, "Avatar file is missing!");
+  }
   const avatar = await uploadOnCloudinary(avatarlocalPath);
+  if (!avatar.url) {
+    throw new ApiError(400, "Error while uploading avatar file!");
+  }
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
@@ -230,7 +236,13 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
   const coverImageLocalPath = req.file?.path;
+  if (!avatarlocalPath) {
+    throw new ApiError(400, "Cover Image file is missing!");
+  }
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+  if (!avatar.url) {
+    throw new ApiError(400, "Error while uploading cover image file!");
+  }
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
@@ -246,7 +258,9 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, { user }, "Cover Image updated successfully"));
 });
 
-
+const userWatchHistory = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+});
 
 export {
   userRegister,
