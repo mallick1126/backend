@@ -114,7 +114,7 @@ const userLogin = asyncHandler(async (req, res) => {
 // User Logout
 const userLogout = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
-    req.user._id,
+    req.user?._id,
     {
       $set: {
         refreshToken: undefined,
@@ -195,7 +195,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 const updateUserInformation = asyncHandler(async (req, res) => {
   const { fullname, email } = req.body;
   const user = await User.findByIdAndUpdate(
-    req.user._id,
+    req.user?._id,
     {
       $set: {
         fullname,
@@ -220,7 +220,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Error while uploading avatar file!");
   }
   const user = await User.findByIdAndUpdate(
-    req.user._id,
+    req.user?._id,
     {
       $set: {
         avatar: avatar.url,
@@ -244,7 +244,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Error while uploading cover image file!");
   }
   const user = await User.findByIdAndUpdate(
-    req.user._id,
+    req.user?._id,
     {
       $set: {
         coverImage: coverImage.url,
@@ -259,7 +259,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 });
 
 const userWatchHistory = asyncHandler(async (req, res) => {
-  const userId = req.user._id;
+  const userId = req.user?._id;
 });
 
 export {

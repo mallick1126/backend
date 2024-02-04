@@ -19,7 +19,7 @@ function formatDuration(seconds) {
 }
 
 const publishVideo = asyncHandler(async (req, res) => {
-  const userId = req.user._id;
+  const userId = req.user?._id;
   const { title, description } = req.body;
   if (!title || !description) {
     throw new ApiError(409, "Title and Description is required!");
@@ -72,7 +72,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
 const updateVideo = asyncHandler(async (req, res) => {
   const videoId = req.params.id;
-  const userId = req.user._id;
+  const userId = req.user?._id;
   const video = await Video.findById(videoId);
   if (!video) {
     throw new ApiError(404, "No video found.");
@@ -100,7 +100,7 @@ const updateVideo = asyncHandler(async (req, res) => {
 
 const deleteVideo = asyncHandler(async (req, res) => {
   const videoId = req.params.id;
-  const userId = req.user._id;
+  const userId = req.user?._id;
   const video = await Video.findById(videoId);
   if (!video) {
     throw new ApiError(404, "No video found.");
