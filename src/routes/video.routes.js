@@ -1,21 +1,28 @@
 import { Router } from "express";
-import { getAllVideos, uploadVideo } from "../controllers/video.controller.js";
+import {
+  getVideoById,
+  publishVideo,
+  updateVideo,
+} from "../controllers/video.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router();
 
+router.route("/get-video/:id").get(getVideoById);
+
 //  secured routes
-router.route("/upload-video").post(
+router.route("/publish-video").post(
   verifyJWT,
   upload.fields([
     { name: "videoFile", maxCount: 1 },
     { name: "thumbnail", maxCount: 1 },
   ]),
-  uploadVideo
+  publishVideo
 );
 
-// router.route("/get-all-videos").get(verifyJWT, getAllVideos);
-router.route("/get-video")
+router
+  .route("/update-video/:id")
+  .post(verifyJWT, upload.single("thumbnail"), updateVideo);
 
 export default router;
