@@ -194,9 +194,6 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 
 const updateUserInformation = asyncHandler(async (req, res) => {
   const { fullname, email } = req.body;
-  if (!fullname && !email) {
-    throw new ApiError(400, "Please fill all the details");
-  }
   const user = await User.findByIdAndUpdate(
     req.user._id,
     {
@@ -248,6 +245,8 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, { user }, "Cover Image updated successfully"));
 });
+
+
 
 export {
   userRegister,
