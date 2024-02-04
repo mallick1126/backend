@@ -98,4 +98,31 @@ const updateVideo = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, video, "Video updated Successfully!"));
 });
 
-export { publishVideo, getVideoById, getAllVideos, updateVideo };
+const deleteVideo = asyncHandler(async (req, res) => {
+  const videoId = req.params.id;
+  const userId = req.user._id;
+  const video = await Video.findById(videoId);
+  if (!video) {
+    throw new ApiError(404, "No video found.");
+  }
+  if (userId.toString() !== video.owner.toString()) {
+    throw new ApiError(400, "You are not authorized");
+  }
+
+  await Video.deleteOne({ _id: videoId });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Video deleted successfully"));
+});
+
+const togglePublishStatus = asyncHandler(async (req, res) => {});
+
+export {
+  publishVideo,
+  getVideoById,
+  getAllVideos,
+  updateVideo,
+  deleteVideo,
+  togglePublishStatus,
+};

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  deleteVideo,
   getVideoById,
   publishVideo,
   updateVideo,
@@ -25,4 +26,5 @@ router
   .route("/update-video/:id")
   .post(verifyJWT, upload.single("thumbnail"), updateVideo);
 
+router.route("/delete-video/:id").delete(verifyJWT, deleteVideo);
 export default router;
