@@ -16,11 +16,12 @@ app.use(urlencoded({ extended: true, limit: `${limit}` }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-
 // Imports routers
-import userRouter from "./routes/user.routes.js"
+import userRouter from "./routes/user.routes.js";
+import videoRouter from "./routes/video.routes.js";
 
 // Routes declaration
-app.use("/api/v1/users", userRouter)
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/videos", videoRouter);
 
 export { app };
