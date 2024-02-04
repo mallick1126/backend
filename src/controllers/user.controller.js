@@ -3,7 +3,10 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { isEmailRegistered, isUsernameTaken } from "../utils/validation.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.config.js";
+import {
+  deleteFromCloudinary,
+  uploadOnCloudinary,
+} from "../utils/cloudinary.config.js";
 import { generateAccessTokenAndRefreshToken } from "../utils/tokens.js";
 import jwt from "jsonwebtoken";
 import { cookieOptions } from "../constant.js";
@@ -226,6 +229,10 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   if (!avatar.url) {
     throw new ApiError(400, "Error while uploading avatar file!");
   }
+
+  if (req.user.avatar) {
+    await deleteFromCloudinary(req.user.avatar);
+  }
   const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
@@ -243,12 +250,15 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
   const coverImageLocalPath = req.file?.path;
-  if (!avatarlocalPath) {
+  if (!coverImageLocalPath) {
     throw new ApiError(400, "Cover Image file is missing!");
   }
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
-  if (!avatar.url) {
+  if (!coverImage.url) {
     throw new ApiError(400, "Error while uploading cover image file!");
+  }
+  if (req.user.coverImage) {
+    await deleteFromCloudinary(req.user.coverImage);
   }
   const user = await User.findByIdAndUpdate(
     req.user?._id,
