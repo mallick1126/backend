@@ -3,7 +3,10 @@ import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncnHandler.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.config.js";
+import {
+  deleteFromCloudinary,
+  uploadOnCloudinary,
+} from "../utils/cloudinary.config.js";
 
 function formatDuration(seconds) {
   const hours = Math.floor(seconds / 3600);
@@ -30,8 +33,8 @@ const publishVideo = asyncHandler(async (req, res) => {
   if (!videoLocalPath || !thumbnailLocalPath) {
     throw new ApiError(409, "Video file is required!");
   }
-  const videoFile = await uploadOnCloudinary(videoLocalPath);
-  const thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
+  const videoFile = await uploadOnCloudinary(videoLocalPath, "videos");
+  const thumbnail = await uploadOnCloudinary(thumbnailLocalPath, "thumbnails");
   const actualDuration = formatDuration(videoFile.duration);
   const newVideo = await Video.create({
     title,
@@ -67,7 +70,13 @@ const getVideoById = asyncHandler(async (req, res) => {
 });
 
 const getAllVideos = asyncHandler(async (req, res) => {
-  const {} = req.query;
+  const { page, size } = req.query;
+  if (!page) page = 1;
+  if (!size) size = 10;
+
+  const limit = parseInt(size);
+
+  const videos = await Video.find().limit(limit);
 });
 
 const updateVideo = asyncHandler(async (req, res) => {
@@ -86,7 +95,13 @@ const updateVideo = asyncHandler(async (req, res) => {
 
   let thumbnailUrl = video.thumbnail;
   if (thumbnailLocalPath) {
-    const uploadedThumbnail = await uploadOnCloudinary(thumbnailLocalPath);
+    const uploadedThumbnail = await uploadOnCloudinary(
+      thumbnailLocalPath,
+      "thumbnails"
+    );
+    if (video.thumbnail) {
+      await deleteFromCloudinary(video.thumbnail, "thumbnails");
+    }
     thumbnailUrl = uploadedThumbnail.url;
   }
 

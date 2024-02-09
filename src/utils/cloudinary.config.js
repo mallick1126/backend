@@ -7,12 +7,17 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
+const uploadOnCloudinary = async (localFilePath, folderName) => {
+  if (!localFilePath) return null;
   try {
-    if (!localFilePath) return null;
-    const response = await cloudinary.uploader.upload(localFilePath, {
+    const uploadOptions = {
+      folder: `snapstream/${folderName}`,
       resource_type: "auto",
-    });
+    };
+    const response = await cloudinary.uploader.upload(
+      localFilePath,
+      uploadOptions
+    );
     // console.log(`File uploaded on cloudinary!`, response.url);
     fs.unlinkSync(localFilePath);
     return response;
@@ -22,27 +27,34 @@ const uploadOnCloudinary = async (localFilePath) => {
   }
 };
 
-const deleteFromCloudinary = async (localPath) => {
+const deleteFromCloudinary = async (remotePath) => {
+  if (!remotePath) return null;
+  const path = remotePath.replace(".png", "");
+  console.log(path);
   try {
-    if (!localPath) return null;
-    const result = await cloudinary.uploader.destroy(localPath, {
-      resource_type: "auto",
-    });
-    return result;
+    await cloudinary.uploader
+      .destroy(path)
+      .then((result) => console.log(result));
   } catch (error) {
-    console.error("Error deleting file from Cloudinary:", error);
-    return null;
+    console.error(error);
+    throw error;
   }
 };
 
-export { uploadOnCloudinary, deleteFromCloudinary };
+/*const deleteFromCloudinary = async (remotePath) => {
+  try {
+    if (!remotePath) return null;
+    const regex = /[\w\.\$]+(?=.png|.jpg|.gif)/;
+    let matches;
+    if ((matches = regex.exec(remotePath)) !== null) {
+      await cloudinary.uploader
+        .destroy(matches[0])
+        .then((result) => console.log(result));
+    }
+  } catch (error) {
+    console.error(error)
+    throw error;
+  }
+};*/
 
-/* About the function */
-/**
- * The function `uploadOnCloudinary` uploads a file to Cloudinary and returns the response, or null if
- * there is an error.
- * @param localFilePath - The localFilePath parameter is the path to the file that you want to upload
- * to Cloudinary. It should be a string representing the file's location on your local machine.
- * @returns The function `uploadOnCloudinary` returns the response object if the file upload is
- * successful. If there is an error during the upload process, the function returns null.
- */
+export { uploadOnCloudinary, deleteFromCloudinary };

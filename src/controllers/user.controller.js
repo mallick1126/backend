@@ -44,12 +44,15 @@ const userRegister = asyncHandler(async (req, res) => {
     throw new ApiError(409, `Avatar file is required`);
   }
 
-  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  const avatar = await uploadOnCloudinary(avatarLocalPath, "avatars");
   if (!avatar) {
     throw new ApiError(409, `Avatar file is required`);
   }
 
-  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+  const coverImage = await uploadOnCloudinary(
+    coverImageLocalPath,
+    "cover-images"
+  );
 
   const newUser = await User.create({
     username: username.toLowerCase(),
@@ -64,8 +67,6 @@ const userRegister = asyncHandler(async (req, res) => {
   const createdUser = await User.findOne(newUser._id).select(
     "-password -refreshToken"
   );
-
-  console.log(createdUser);
   if (!createdUser) {
     throw new ApiError(500, `Something went wrong while registering the user`);
   }
@@ -225,13 +226,13 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
   if (!avatarlocalPath) {
     throw new ApiError(400, "Avatar file is missing!");
   }
-  const avatar = await uploadOnCloudinary(avatarlocalPath);
+  const avatar = await uploadOnCloudinary(avatarlocalPath, "avatars");
   if (!avatar.url) {
     throw new ApiError(400, "Error while uploading avatar file!");
   }
 
   if (req.user.avatar) {
-    await deleteFromCloudinary(req.user.avatar);
+    await deleteFromCloudinary(req.user.avatar, "avatars");
   }
   const user = await User.findByIdAndUpdate(
     req.user?._id,
@@ -253,12 +254,13 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
   if (!coverImageLocalPath) {
     throw new ApiError(400, "Cover Image file is missing!");
   }
-  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+  await deleteFromCloudinary(req.user.coverImage);
+  const coverImage = await uploadOnCloudinary(
+    coverImageLocalPath,
+    "cover-images"
+  );
   if (!coverImage.url) {
     throw new ApiError(400, "Error while uploading cover image file!");
-  }
-  if (req.user.coverImage) {
-    await deleteFromCloudinary(req.user.coverImage);
   }
   const user = await User.findByIdAndUpdate(
     req.user?._id,
@@ -268,7 +270,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
       },
     },
     { new: true }
-  ).select("-password refreshToken");
+  ).select("-password -refreshToken");
 
   return res
     .status(200)
